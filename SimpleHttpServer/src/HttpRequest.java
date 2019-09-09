@@ -8,16 +8,17 @@ import java.net.Socket;
 import java.util.StringTokenizer;
 
 /*
- * Criar mensagem de log contendo:
- * (1) IP requisitante
- * (2) Arquivo solicitado
- * (3) Cod/status
- * 
- * Ex: 127.0.0.1 - GET / HTTP/1.1 - 200 OK - (Nome da thread que atendeu)
- */
+* Criar mensagem de log contendo:
+* (1) IP requisitante
+* (2) Arquivo solicitado
+* (3) Cod/status
+* 
+* Ex: 127.0.0.1 - GET / HTTP/1.1 - 200 OK - (Nome da thread que atendeu)
+*/
 
 public class HttpRequest {
 	private Socket clientConn;
+	String mensagem;
 
 	public HttpRequest(Socket clientConn) throws Exception {
 		this.clientConn = clientConn;
@@ -27,7 +28,7 @@ public class HttpRequest {
 	public void process() throws Exception {
 		
 		Logger logger = Logger.getInstance();
-		
+		mensagem="";
 		Reader reader = new InputStreamReader(clientConn.getInputStream());
 		BufferedReader din = new BufferedReader(reader);
 		
@@ -42,8 +43,9 @@ public class HttpRequest {
 		}
 		
 		request = request.trim();
-		
-		System.out.println(request+clientConn.getInetAddress().getLocalHost());
+		mensagem +=clientConn.getInetAddress().getLocalHost()+ " ";
+		mensagem += request;
+		System.out.println(request);
 		StringTokenizer st = new StringTokenizer(request);
 
 		String header = st.nextToken();
@@ -69,37 +71,46 @@ public class HttpRequest {
 			String contentBody = null;
 
 			if (fileExist) {
+				mensagem+=" 200 OK ";
 				statusLine = HTTP.OK.toString();
 				contentTypeLine = HTTP.TEXT_CONTENT.toString();
 				contentLengthLine = HTTP.CONTENT_LENGTH.toString() + getLengthLine(fin);
 			} else {
+				mensagem+=" 404 NOT FOUND ";
 				statusLine = HTTP.NOT_FOUND.toString();
 				contentTypeLine = HTTP.TEXT_CONTENT.toString();
 				contentBody = HTTP.NOT_FOUND_PAGE.toString();
 				contentLengthLine = HTTP.CONTENT_LENGTH.toString()+ getLengthLine(contentBody);
 			}
-
+		
+			mensagem += fileName;
 			out.write(statusLine.getBytes());
 			out.write(serverLine.getBytes());
 			out.write(contentTypeLine.getBytes());
 			out.write(contentLengthLine.getBytes());
 			out.write(HTTP.CLOSE_CONNECTION.toString().getBytes());
-			
+			logger.putMessage(mensagem);
+			logger.getMessage();
 			if (fileExist) {
 
 				byte[] buffer = new byte[1024];
 				int bytes = 0;
 				while ((bytes = fin.read(buffer)) != -1) {
-					out.write(buffer, 0, bytes);
+					try {
+						out.write(buffer, 0, bytes);
+					} catch (Exception e) {
+						System.out.println("Connection aborted");
+						fin.close();
+						clientConn.close();
+						return;
+					}
 				}
-
 				fin.close();
 			} else {
 				out.write(contentBody.getBytes());
 			}
 			
-			logger.putMessage("nada ainda");
-			
+			logger.closeLog();
 			out.close();
 			clientConn.close();
 		}

@@ -1,3 +1,7 @@
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Date;
 import java.util.concurrent.LinkedBlockingQueue;
 /*
@@ -16,6 +20,8 @@ public class Logger {
 	private int contador;
 	private Date hora;
 	private LinkedBlockingQueue<String> buffer;
+	private static File arquivoLog;
+	private static FileWriter fw;
 	// incluir campos necessarios
 
 	// singleton
@@ -23,6 +29,16 @@ public class Logger {
 
 		if (instance == null) {
 			instance = new Logger();
+			try {
+				arquivoLog = new File("log.txt");
+				if (!arquivoLog.exists()) {
+					arquivoLog.createNewFile();
+				}
+					
+				fw = new FileWriter(arquivoLog.getAbsoluteFile(), true);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 		return instance;
 	}
@@ -33,8 +49,9 @@ public class Logger {
 
 	public void putMessage(String message) {
 		StringBuilder sb = new StringBuilder();
-		sb.append("[ ").append(contador).append(" ] \n");
-		sb.append("[ ").append(new Date()).append(" ] \n");
+		contador++;
+		sb.append("[ ").append(contador).append(" ] ");
+		sb.append("[ ").append(new Date()).append(" ] ");
 		sb.append("[ ").append(message).append(" ] \n");
 		try {
 			buffer.put(sb.toString());
@@ -45,11 +62,21 @@ public class Logger {
 
 	public String getMessage() {
 		try {
-			return buffer.take();
+			String msg  = buffer.take();
+			fw.write(msg);
+			return msg ;
 		} catch (Exception e) {
 
 		}
 		return "";
 	}
 
+	public void closeLog() {
+		try {
+			fw.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+	}
 }
