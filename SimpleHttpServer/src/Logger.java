@@ -13,7 +13,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  * (5) inclua o que for necessario (metodos e atributos)
  */
 
-public class Logger {
+public class Logger implements Runnable {
 
 	private static Logger instance = null;
 	private final static String logFileName = "serverlog.txt";
@@ -30,14 +30,15 @@ public class Logger {
 		if (instance == null) {
 			instance = new Logger();
 			try {
-				arquivoLog = new File("log.txt");
+				arquivoLog = new File(logFileName);
 				if (!arquivoLog.exists()) {
 					arquivoLog.createNewFile();
 				}
-					
+
 				fw = new FileWriter(arquivoLog.getAbsoluteFile(), true);
 			} catch (IOException e) {
 				e.printStackTrace();
+				System.out.println("e " + e.getMessage());
 			}
 		}
 		return instance;
@@ -56,19 +57,20 @@ public class Logger {
 		try {
 			buffer.put(sb.toString());
 		} catch (Exception e) {
-			// TODO: handle exception
+			System.out.println("Ecc "+ e.getMessage());
 		}
 	}
 
-	public String getMessage() {
-		try {
-			String msg  = buffer.take();
-			fw.write(msg);
-			return msg ;
-		} catch (Exception e) {
-
-		}
-		return "";
+	public void getMessage() {
+	//	while (true) {
+			try {
+				String msg = buffer.take();
+				fw.write(msg);
+				fw.flush();
+			} catch (Exception e) {
+				System.out.println("exc "+e.getMessage());
+			}
+	//	}
 	}
 
 	public void closeLog() {
@@ -77,6 +79,11 @@ public class Logger {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
+	}
+
+	@Override
+	public void run() {
+		getMessage();
 	}
 }

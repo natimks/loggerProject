@@ -28,6 +28,7 @@ public class HttpRequest {
 	public void process() throws Exception {
 		
 		Logger logger = Logger.getInstance();
+		logger.run();
 		mensagem="";
 		Reader reader = new InputStreamReader(clientConn.getInputStream());
 		BufferedReader din = new BufferedReader(reader);
@@ -90,9 +91,7 @@ public class HttpRequest {
 			out.write(contentLengthLine.getBytes());
 			out.write(HTTP.CLOSE_CONNECTION.toString().getBytes());
 			logger.putMessage(mensagem);
-			logger.getMessage();
 			if (fileExist) {
-
 				byte[] buffer = new byte[1024];
 				int bytes = 0;
 				while ((bytes = fin.read(buffer)) != -1) {

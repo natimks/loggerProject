@@ -10,7 +10,7 @@ import java.util.concurrent.*;
 public class Server {
 	
 	public static void main(String args[]) throws Exception {
-		ServerSocket serverSocket = new ServerSocket(1236);
+		ServerSocket serverSocket = new ServerSocket(1234);
 		boolean cont = true;
 		ExecutorService application = Executors.newFixedThreadPool(1);
 		while (cont) {

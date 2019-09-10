@@ -1,0 +1,4 @@
+[ 1 ] [ Tue Sep 10 19:31:28 BRT 2019 ] [ 641c67870ad7/192.168.56.1 GET / HTTP/1.1 200 OK /index.html ] 
+[ 1 ] [ Tue Sep 10 19:32:39 BRT 2019 ] [ 641c67870ad7/192.168.56.1 GET / HTTP/1.1 200 OK /index.html ] 
+[ 1 ] [ Tue Sep 10 19:34:43 BRT 2019 ] [ 641c67870ad7/192.168.56.1 GET / HTTP/1.1 200 OK /index.html ] 
+[ 1 ] [ Tue Sep 10 19:38:47 BRT 2019 ] [ 641c67870ad7/192.168.56.1 GET / HTTP/1.1 200 OK /index.html ] 
