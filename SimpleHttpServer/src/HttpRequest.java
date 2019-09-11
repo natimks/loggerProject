@@ -28,7 +28,7 @@ public class HttpRequest {
 	public void process() throws Exception {
 		
 		Logger logger = Logger.getInstance();
-		logger.run();
+	
 		mensagem="";
 		Reader reader = new InputStreamReader(clientConn.getInputStream());
 		BufferedReader din = new BufferedReader(reader);
@@ -109,7 +109,6 @@ public class HttpRequest {
 				out.write(contentBody.getBytes());
 			}
 			
-			logger.closeLog();
 			out.close();
 			clientConn.close();
 		}
